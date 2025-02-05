@@ -1,4 +1,4 @@
-// filepath: /c:/Users/PC/Desktop/LaburoApp/src/supabase.js
+// filepath: /C:/Users/PC/Desktop/LaburoApp/src/supabase.js
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://tkqpqbbljkwsdptcwysk.supabase.co';

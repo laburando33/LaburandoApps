@@ -1,14 +1,26 @@
-// filepath: /c:/Users/PC/Desktop/LaburoApp/src/App.js
+// filepath: /C:/Users/PC/Desktop/LaburoApp/src/App.js
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import Auth from './components/Auth';
 
-const App = () => {
+export default function App() {
   return (
-    <div>
-      <h1>Welcome to LaburoApp</h1>
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to LaburoApp</Text>
       <Auth />
-    </div>
+    </View>
   );
-};
+}
 
-export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 16,
+  },
+});

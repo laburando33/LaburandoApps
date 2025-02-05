@@ -1,5 +1,6 @@
-// filepath: /c:/Users/PC/Desktop/LaburoApp/src/components/Auth.js
+// filepath: /C:/Users/PC/Desktop/LaburoApp/src/components/Auth.js
 import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { supabase } from '../supabase';
 
 const Auth = () => {
@@ -27,26 +28,57 @@ const Auth = () => {
   };
 
   return (
-    <div>
-      <h2>Auth Component</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {message && <p style={{ color: 'green' }}>{message}</p>}
-      <input
-        type="email"
+    <View style={styles.container}>
+      <Text style={styles.title}>Auth Component</Text>
+      {error && <Text style={styles.error}>{error}</Text>}
+      {message && <Text style={styles.message}>{message}</Text>}
+      <TextInput
+        style={styles.input}
         placeholder="Email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChangeText={(text) => setEmail(text)}
       />
-      <input
-        type="password"
+      <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        secureTextEntry
+        onChangeText={(text) => setPassword(text)}
       />
-      <button onClick={handleSignUp}>Sign Up</button>
-      <button onClick={handleSignIn}>Sign In</button>
-    </div>
+      <Button title="Sign Up" onPress={handleSignUp} />
+      <Button title="Sign In" onPress={handleSignIn} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  error: {
+    color: 'red',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  message: {
+    color: 'green',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+});
 
 export default Auth;
