@@ -39,7 +39,7 @@ export function Testimonials() {
                 <p className="text-sm text-gray-500">{testimonial.role}</p>
               </CardHeader>
               <CardContent>
-                <p className="italic">"{testimonial.content}"</p>
+                <p className="italic">&quot;{testimonial.content}&quot;</p>
               </CardContent>
             </Card>
           ))}
@@ -48,4 +48,3 @@ export function Testimonials() {
     </section>
   )
 }
-
