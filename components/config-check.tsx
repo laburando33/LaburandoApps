@@ -9,7 +9,7 @@ export function ConfigCheck({ children }: { children: React.ReactNode }) {
   if (!isSupabaseConfigured()) {
     return (
       <>
-        <Alert variant="warning">
+        <Alert variant="default">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Advertencia de Configuración</AlertTitle>
           <AlertDescription>
@@ -28,4 +28,3 @@ export function ConfigCheck({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>
 }
-
