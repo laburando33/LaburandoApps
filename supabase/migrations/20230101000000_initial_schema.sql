@@ -1,3 +1,5 @@
+-- filepath: /C:/Users/PC/Desktop/LaburandoApps/supabase/migrations/20230101000000_initial_schema.sql
+
 -- Create extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 

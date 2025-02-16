@@ -1,83 +1,96 @@
 -- filepath: /C:/Users/PC/Desktop/LaburandoApps/supabase/migrations/20230615000000_schema_updates.sql
 
--- Add new columns to profiles table
-ALTER TABLE profiles
-ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN IF NOT EXISTS phone TEXT,
-ADD COLUMN IF NOT EXISTS location TEXT;
+-- Add new indexes for improved query performance
+CREATE INDEX IF NOT EXISTS idx_service_requests_status ON service_requests(status);
+CREATE INDEX IF NOT EXISTS idx_professional_profiles_rating ON professional_profiles(rating);
 
--- Modify service_requests table
+-- Add new constraint to ensure positive prices
 ALTER TABLE service_requests
-ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN IF NOT EXISTS professional_id UUID REFERENCES profiles(id),
-ADD COLUMN IF NOT EXISTS price NUMERIC(10,2),
-ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP WITH TIME ZONE,
-ALTER COLUMN status TYPE TEXT,
-ALTER COLUMN status SET DEFAULT 'pending',
-ADD CONSTRAINT service_requests_status_check 
-  CHECK (status IN ('pending', 'assigned', 'in_progress', 'completed', 'cancelled'));
+ADD CONSTRAINT check_price_positive CHECK (price >= 0);
 
--- Modify professional_profiles table
-ALTER TABLE professional_profiles
-ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN IF NOT EXISTS bio TEXT,
-ADD COLUMN IF NOT EXISTS years_of_experience INTEGER,
-ADD COLUMN IF NOT EXISTS availability TEXT[];
+-- Create new enum type for service categories
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'service_category') THEN
+        CREATE TYPE service_category AS ENUM ('home_repair', 'cleaning', 'tutoring', 'pet_care', 'other');
+    END IF;
+END$$;
 
--- Create reviews table
-CREATE TABLE IF NOT EXISTS reviews (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  service_request_id UUID REFERENCES service_requests(id),
-  client_id UUID REFERENCES profiles(id),
-  professional_id UUID REFERENCES profiles(id),
-  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
-  comment TEXT
-);
+-- Add new column with the enum type to service_requests
+ALTER TABLE service_requests
+ADD COLUMN IF NOT EXISTS category service_category;
 
--- Enable Row Level Security for reviews table
-ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
-
--- Create policies for reviews table
-CREATE POLICY "Reviews are viewable by everyone" ON reviews FOR SELECT USING (true);
-CREATE POLICY "Clients can insert reviews for completed services" ON reviews 
-FOR INSERT WITH CHECK (
-  auth.uid() = client_id AND 
-  EXISTS (
-    SELECT 1 FROM service_requests 
-    WHERE id = service_request_id AND status = 'completed'
-  )
-);
-CREATE POLICY "Users can update their own reviews" ON reviews FOR UPDATE USING (auth.uid() = client_id);
-
--- Create function for updating timestamps
-CREATE OR REPLACE FUNCTION update_modified_column()
+-- Create function to update professional rating
+CREATE OR REPLACE FUNCTION update_professional_rating()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = now();
+    UPDATE professional_profiles
+    SET rating = (
+        SELECT AVG(rating)
+        FROM reviews
+        WHERE professional_id = NEW.professional_id
+    ),
+    total_reviews = (
+        SELECT COUNT(*)
+        FROM reviews
+        WHERE professional_id = NEW.professional_id
+    )
+    WHERE user_id = NEW.professional_id;
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
--- Create triggers for updating timestamps
-CREATE TRIGGER update_profiles_modtime
-    BEFORE UPDATE ON profiles
+-- Create trigger for updating professional rating
+DROP TRIGGER IF EXISTS update_professional_rating_trigger ON reviews;
+CREATE TRIGGER update_professional_rating_trigger
+AFTER INSERT OR UPDATE ON reviews
+FOR EACH ROW
+EXECUTE FUNCTION update_professional_rating();
+
+-- Add new columns to service_requests for more detailed tracking
+ALTER TABLE service_requests
+ADD COLUMN IF NOT EXISTS estimated_duration INTERVAL,
+ADD COLUMN IF NOT EXISTS actual_duration INTERVAL,
+ADD COLUMN IF NOT EXISTS payment_status TEXT CHECK (payment_status IN ('pending', 'paid', 'refunded'));
+
+-- Create a new table for service categories
+CREATE TABLE IF NOT EXISTS service_categories (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT UNIQUE NOT NULL,
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create a new table for professional skills
+CREATE TABLE IF NOT EXISTS professional_skills (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  professional_id UUID REFERENCES professional_profiles(id),
+  skill_name TEXT NOT NULL,
+  proficiency_level INTEGER CHECK (proficiency_level BETWEEN 1 AND 5),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(professional_id, skill_name)
+);
+
+-- Enable RLS on new tables
+ALTER TABLE service_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE professional_skills ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for new tables
+CREATE POLICY "Service categories are viewable by everyone" ON service_categories FOR SELECT USING (true);
+CREATE POLICY "Admins can manage service categories" ON service_categories FOR ALL USING (auth.role() = 'admin');
+
+CREATE POLICY "Professional skills are viewable by everyone" ON professional_skills FOR SELECT USING (true);
+CREATE POLICY "Professionals can manage their own skills" ON professional_skills FOR ALL USING (auth.uid() = (SELECT user_id FROM professional_profiles WHERE id = professional_id));
+
+-- Create triggers for updating timestamps on new tables
+CREATE TRIGGER update_service_categories_modtime
+    BEFORE UPDATE ON service_categories
     FOR EACH ROW
     EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER update_service_requests_modtime
-    BEFORE UPDATE ON service_requests
-    FOR EACH ROW
-    EXECUTE FUNCTION update_modified_column();
-
-CREATE TRIGGER update_professional_profiles_modtime
-    BEFORE UPDATE ON professional_profiles
-    FOR EACH ROW
-    EXECUTE FUNCTION update_modified_column();
-
-CREATE TRIGGER update_reviews_modtime
-    BEFORE UPDATE ON reviews
+CREATE TRIGGER update_professional_skills_modtime
+    BEFORE UPDATE ON professional_skills
     FOR EACH ROW
     EXECUTE FUNCTION update_modified_column();
