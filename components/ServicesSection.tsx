@@ -1,58 +1,33 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wrench, Zap, Paintbrush } from "lucide-react";
-import Image from "next/image";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Wrench, PaintbrushIcon as PaintBrush, Zap, Truck } from "lucide-react"
 
 const services = [
-  {
-    title: "Plomería",
-    icon: <Wrench className="w-6 h-6 mr-2 text-primary" />,
-    image: "/images/plomeria.webp",
-    description: "Soluciones rápidas para todas tus necesidades de plomería.",
-  },
-  {
-    title: "electricista",
-    icon: <Wrench className="w-6 h-6 mr-2 text-primary" />,
-    image: "/images/electricidad.webp",
-    description: "Instalaciones y reparaciones eléctricas seguras y confiables.",
-  },
-  {
-    title: "electricista",
-    icon: <Wrench className="w-6 h-6 mr-2 text-primary" />,
-    image: "/images/electricidad.webp",
-    description: "Instalaciones y reparaciones eléctricas seguras y confiables.",
-  },
-  
-  // Agrega más servicios aquí...
-];
+  { title: "Plomería", description: "Soluciones para todas tus necesidades de plomería", icon: Wrench },
+  { title: "Pintura", description: "Renueva tus espacios con nuestros expertos en pintura", icon: PaintBrush },
+  { title: "Electricidad", description: "Instalaciones y reparaciones eléctricas seguras", icon: Zap },
+  { title: "Mudanzas", description: "Servicios de mudanza confiables y eficientes", icon: Truck },
+]
 
 export default function ServicesSection() {
   return (
     <section className="mb-12">
-      <h3 className="text-2xl font-semibold text-center mb-6">Servicios que todos necesitamos..</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {services.map((service) => (
-          <Card key={service.title}>
+      <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">Nuestros Servicios</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {services.map((service, index) => (
+          <Card key={index}>
             <CardHeader>
               <CardTitle className="flex items-center">
-                {service.icon}
+                {<service.icon className="w-6 h-6 mr-2" />}
                 {service.title}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Image
-                src={service.image}
-                alt={service.title}
-                width={400}
-                height={400}
-                className="mb-4"
-              />
-              {service.description}
-              
+              <CardDescription>{service.description}</CardDescription>
             </CardContent>
-            
           </Card>
         ))}
       </div>
     </section>
-  );
+  )
 }
+

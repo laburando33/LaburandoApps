@@ -1,12 +1,21 @@
-// filepath: /C:/Users/PC/Desktop/LaburandoApps/app/components/DataDisplay.tsx
+"use client"
 
-'use client'
+import { useData } from "../../hooks/useData"
+import {
+  type DataItem,
+  isProfile,
+  isServiceRequest,
+  isProfessionalProfile,
+  isReview,
+  isPartnerCredit,
+  isRequest,
+} from "@/app/types"
+import type { Database } from "@/lib/database.types"
 
-import { useData } from '../../hooks/useData'
-import { DataItem } from '@/app/types'
+type TableName = keyof Database["public"]["Tables"]
 
 interface DataDisplayProps {
-  table: 'profiles' | 'service_requests' | 'professional_profiles' | 'reviews'
+  table: TableName
 }
 
 export default function DataDisplay({ table }: DataDisplayProps) {
@@ -18,22 +27,18 @@ export default function DataDisplay({ table }: DataDisplayProps) {
 
   return (
     <div>
+      <h2>{table}</h2>
       {data.map((item: DataItem) => (
-        <div key={item.id}>
-          {table === 'profiles' && 'full_name' in item && (
-            <p>{item.full_name}</p>
-          )}
-          {table === 'service_requests' && 'service_type' in item && (
-            <p>{item.service_type}</p>
-          )}
-          {table === 'professional_profiles' && 'services' in item && (
-            <p>{item.services.join(', ')}</p>
-          )}
-          {table === 'reviews' && 'rating' in item && (
-            <p>Rating: {item.rating}</p>
-          )}
+        <div key={(item as any).id}>
+          {isProfile(item) && <p>Name: {item.full_name}</p>}
+          {isServiceRequest(item) && <p>Service Type: {item.service_type}</p>}
+          {isProfessionalProfile(item) && <p>Services: {item.services.join(", ")}</p>}
+          {isReview(item) && <p>Rating: {item.rating}</p>}
+          {isPartnerCredit(item) && <p>Credits: {item.credits}</p>}
+          {isRequest(item) && <p>Request Details: {item.request_details}</p>}
         </div>
       ))}
     </div>
   )
 }
+
