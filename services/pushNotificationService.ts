@@ -14,7 +14,9 @@ export async function registerForPushNotificationsAsync(): Promise<ExpoPushToken
     return undefined
   }
 
-  let token: ExpoPushToken | undefined
+  const token: ExpoPushToken | undefined = await ExpoNotifications.getExpoPushTokenAsync().then(
+    (response) => response.data,
+  )
 
   if (Platform.OS === "android") {
     await ExpoNotifications.setNotificationChannelAsync("default", {
@@ -35,7 +37,6 @@ export async function registerForPushNotificationsAsync(): Promise<ExpoPushToken
     alert("Failed to get push token for push notification!")
     return
   }
-  token = (await ExpoNotifications.getExpoPushTokenAsync()).data
 
   return token
 }

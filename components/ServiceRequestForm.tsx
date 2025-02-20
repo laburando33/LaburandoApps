@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import type { Database } from "@/lib/database.types"
 import { sendNotification, sendWhatsAppMessage } from "@/services/notificationService"
-import { useToast, type ToastProps } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 
 interface FormData {
   name: string
@@ -71,7 +71,7 @@ const ServiceRequestForm = () => {
       toast({
         title: "Solicitud enviada",
         description: "Tu solicitud ha sido enviada con éxito.",
-      } as ToastProps)
+      })
 
       // Limpiar el formulario
       setFormData({
@@ -87,7 +87,7 @@ const ServiceRequestForm = () => {
         title: "Error",
         description: "Hubo un problema al enviar tu solicitud. Por favor, intenta de nuevo.",
         variant: "destructive",
-      } as ToastProps)
+      })
     } finally {
       setIsSubmitting(false)
     }

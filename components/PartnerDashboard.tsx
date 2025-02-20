@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
@@ -8,7 +8,8 @@ import type { Database } from "@/lib/database.types"
 import { useToast } from "@/components/ui/use-toast"
 
 type Request = Database["public"]["Tables"]["requests"]["Row"]
-type PartnerCredit = Database["public"]["Tables"]["partner_credits"]["Row"]
+// Remove this line
+//type PartnerCredit = Database["public"]["Tables"]["partner_credits"]["Row"]
 
 const PartnerDashboard = () => {
   const [requests, setRequests] = useState<Request[]>([])
@@ -17,11 +18,11 @@ const PartnerDashboard = () => {
   const { toast } = useToast()
 
   useEffect(() => {
-    fetchRequests()
-    fetchCredits()
-  }, [])
+    fetchRequestsMemoized()
+    fetchCreditsMemoized()
+  }, []) // Updated useEffect dependency array
 
-  const fetchRequests = async () => {
+  const fetchRequestsMemoized = useCallback(async () => {
     const { data, error } = await supabase.from("requests").select("*").eq("status", "pending")
     if (data) setRequests(data)
     if (error) {
@@ -32,9 +33,9 @@ const PartnerDashboard = () => {
         variant: "destructive",
       })
     }
-  }
+  }, [supabase, toast])
 
-  const fetchCredits = async () => {
+  const fetchCreditsMemoized = useCallback(async () => {
     const { data, error } = await supabase.from("partner_credits").select("credits").single()
     if (data) setCredits(data.credits)
     if (error) {
@@ -45,7 +46,7 @@ const PartnerDashboard = () => {
         variant: "destructive",
       })
     }
-  }
+  }, [supabase, toast])
 
   const handleBuyCredits = async () => {
     // Implementar lógica para comprar créditos

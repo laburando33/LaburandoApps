@@ -5,6 +5,7 @@ import SearchBar from "@/components/SearchBar"
 import ServiceRequestForm from "@/components/ServiceRequestForm"
 import { Button } from "@/components/ui/button"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import Image from "next/image"
 
 export default function Home() {
   return (
@@ -13,11 +14,15 @@ export default function Home() {
 
       <main className="flex-grow container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <section
-          className="text-center mb-12 rounded-lg shadow-lg bg-cover bg-center"
-          style={{ backgroundImage: 'url("/images/fondoLaburando.jpg")' }}
-        >
-          <div className="bg-white bg-opacity-80 p-6 rounded-lg inline-block">
+        <section className="text-center mb-12 rounded-lg shadow-lg relative overflow-hidden">
+          <Image
+            src="/images/fondoLaburando.jpg"
+            alt="Fondo Laburando"
+            fill
+            style={{ objectFit: "cover" }}
+            quality={100}
+          />
+          <div className="bg-white bg-opacity-80 p-6 rounded-lg inline-block relative z-10">
             <h1 className="text-4xl font-bold mb-4 text-gray-800">Encuentra profesionales de confianza</h1>
             <p className="text-xl mb-8 text-gray-700">
               Conectamos tus proyectos con los mejores expertos locales. Rápido, fácil y seguro.

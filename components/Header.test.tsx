@@ -1,6 +1,9 @@
+"use client"
+
 import { render, screen, fireEvent } from "@testing-library/react"
 import Header from "./Header"
 import "@testing-library/jest-dom"
+import { useRouter } from "next/navigation"
 
 // Mock the next/navigation module
 jest.mock("next/navigation", () => ({
@@ -33,8 +36,13 @@ describe("Header", () => {
 
   it("handles navigation clicks", () => {
     const pushMock = jest.fn()
-    jest.spyOn(require("next/navigation"), "useRouter").mockImplementation(() => ({
+    jest.spyOn({ useRouter }, "useRouter").mockImplementation(() => ({
       push: pushMock,
+      back: jest.fn(),
+      forward: jest.fn(),
+      refresh: jest.fn(),
+      replace: jest.fn(),
+      prefetch: jest.fn(),
     }))
 
     render(<Header />)
@@ -51,8 +59,13 @@ describe("Header", () => {
 
   it("handles login and register clicks", () => {
     const pushMock = jest.fn()
-    jest.spyOn(require("next/navigation"), "useRouter").mockImplementation(() => ({
+    jest.spyOn({ useRouter }, "useRouter").mockImplementation(() => ({
       push: pushMock,
+      back: jest.fn(),
+      forward: jest.fn(),
+      refresh: jest.fn(),
+      replace: jest.fn(),
+      prefetch: jest.fn(),
     }))
 
     render(<Header />)

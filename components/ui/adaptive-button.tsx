@@ -1,22 +1,19 @@
 import React from "react"
 import { Button as WebButton, type ButtonProps as WebButtonProps } from "@/components/ui/button"
-import { TouchableOpacity, Text, StyleSheet } from "react-native"
-import type { ComponentProps } from "react"
+import { TouchableOpacity, Text, StyleSheet, type TouchableOpacityProps } from "react-native"
 import { getPlatformSpecificComponent } from "@/config/platform"
 
-// Define a union type that includes both web and mobile props
 export type AdaptiveButtonProps = WebButtonProps &
-  Omit<ComponentProps<typeof TouchableOpacity>, keyof WebButtonProps> & {
+  Omit<TouchableOpacityProps, keyof WebButtonProps> & {
     children: React.ReactNode
+    style: React.CSSProperties
   }
 
-const MobileButton = React.forwardRef<typeof TouchableOpacity, AdaptiveButtonProps>(
-  ({ children, style, ...props }, ref) => (
-    <TouchableOpacity ref={ref as any} style={[styles.button, style]} {...props}>
-      <Text style={styles.text}>{children}</Text>
-    </TouchableOpacity>
-  ),
-)
+const MobileButton = React.forwardRef<typeof TouchableOpacity, AdaptiveButtonProps>(({ children, style, ...props }, ref) => (
+  <TouchableOpacity ref={ref} style={{ ...styles.button, ...style }} {...props}>
+    <Text style={styles.text}>{children}</Text>
+  </TouchableOpacity>
+))
 
 MobileButton.displayName = "MobileButton"
 

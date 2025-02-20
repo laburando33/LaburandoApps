@@ -5,34 +5,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("Supabase environment variables are not set. Using fallback values.")
+  throw new Error("Missing Supabase environment variables")
 }
 
-// Create the Supabase client
-export const supabase = createClient<Database>(
-  supabaseUrl || "https://example.supabase.co",
-  supabaseAnonKey || "your-anon-key",
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  }
-)
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
 
-// Helper function to check if Supabase is configured
-export function isSupabaseConfigured(): boolean {
-  const isConfigured = Boolean(supabaseUrl && supabaseAnonKey)
-  if (!isConfigured) {
-    console.warn("Supabase is not properly configured. Check your environment variables.")
-  }
-  return isConfigured
-}
+// If you need a function to get the Supabase client, you can add this:
+export const getSupabase = () => supabase
 
-// Helper function to get a type-safe Supabase client
-export function getSupabase() {
-  if (!isSupabaseConfigured()) {
-    throw new Error("Supabase is not configured. Cannot proceed with database operations.")
-  }
-  return supabase
-}

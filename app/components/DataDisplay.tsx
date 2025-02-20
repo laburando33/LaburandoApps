@@ -29,7 +29,7 @@ export default function DataDisplay({ table }: DataDisplayProps) {
     <div>
       <h2>{table}</h2>
       {data.map((item: DataItem) => (
-        <div key={(item as any).id}>
+        <div key={(item as DataItem).id}>
           {isProfile(item) && <p>Name: {item.full_name}</p>}
           {isServiceRequest(item) && <p>Service Type: {item.service_type}</p>}
           {isProfessionalProfile(item) && <p>Services: {item.services.join(", ")}</p>}

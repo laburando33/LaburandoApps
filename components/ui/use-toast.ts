@@ -1,20 +1,17 @@
 "use client"
 
+// This file should export both the useToast hook and the toast function
 import * as React from "react"
-
-import type { ToastActionElement, ToastProps as ToastPrimitiveProps } from "@/components/ui/toast"
+import type { ToastActionElement, ToastProps } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
 
-export type ToastProps = ToastPrimitiveProps & {
+type ToasterToast = ToastProps & {
+  id: string
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
-}
-
-type ToasterToast = ToastProps & {
-  id: string
 }
 
 const actionTypes = {
@@ -73,7 +70,7 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
-const reducer = (state: State, action: Action): State => {
+export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
       return {
@@ -135,7 +132,9 @@ function dispatch(action: Action) {
   })
 }
 
-function toast({ ...props }: ToastProps) {
+type Toast = Omit<ToasterToast, "id">
+
+function toast({ ...props }: Toast) {
   const id = genId()
 
   const update = (props: ToasterToast) =>
@@ -185,4 +184,5 @@ function useToast() {
 }
 
 export { useToast, toast }
+export type { Toast }
 
