@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import type { Database } from "@/lib/database.types"
 import { sendNotification, sendWhatsAppMessage } from "@/services/notificationService"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/lib/useToast"
 
 interface FormData {
   name: string
@@ -27,7 +27,7 @@ const ServiceRequestForm = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const supabase = createClientComponentClient<Database>()
-  const { toast } = useToast()
+  const { showToast } = useToast()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -68,7 +68,8 @@ const ServiceRequestForm = () => {
         `Gracias por tu solicitud de ${formData.serviceType}. Pronto te contactaremos con presupuestos.`,
       )
 
-      toast({
+      showToast({
+        type: "success",
         title: "Solicitud enviada",
         description: "Tu solicitud ha sido enviada con éxito.",
       })
@@ -83,10 +84,10 @@ const ServiceRequestForm = () => {
       })
     } catch (error) {
       console.error("Error al enviar la solicitud:", error)
-      toast({
+      showToast({
+        type: "error",
         title: "Error",
         description: "Hubo un problema al enviar tu solicitud. Por favor, intenta de nuevo.",
-        variant: "destructive",
       })
     } finally {
       setIsSubmitting(false)

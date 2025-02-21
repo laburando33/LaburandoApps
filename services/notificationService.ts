@@ -1,5 +1,6 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import type { Database } from "@/lib/database.types"
+import { sendPushNotification, type ExpoPushToken } from "./pushNotificationService"
 
 const supabase = createClientComponentClient<Database>()
 
@@ -19,8 +20,7 @@ export const sendNotification = async (userId: string, title: string, body: stri
     if (userError) throw userError
 
     if (userData && userData.push_token) {
-      const { sendPushNotification } = await import("./pushNotificationService")
-      await sendPushNotification(userData.push_token, title, body)
+      await sendPushNotification(userData.push_token as ExpoPushToken, title, body)
     }
 
     console.log("Notification saved and sent:", data)

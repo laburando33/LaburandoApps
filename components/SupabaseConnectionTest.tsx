@@ -9,9 +9,9 @@ export default function SupabaseConnectionTest() {
   useEffect(() => {
     async function testConnection() {
       try {
-        // We're not using `data` here, but the query is executed to test the connection
-        const { error } = await supabase.from("profiles").select("count").single()
+        const { data, error } = await supabase.from("profiles").select("count").single()
         if (error) throw error
+        console.log("Supabase connection test data:", data)
         setStatus("connected")
       } catch (error) {
         console.error("Error connecting to Supabase:", error)

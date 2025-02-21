@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/lib/useToast"
 
 export default function RegistrationForm() {
   const [fullName, setFullName] = useState("")
@@ -17,13 +17,14 @@ export default function RegistrationForm() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClientComponentClient()
-  const toast = useToast()
+  const { showToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
 
     try {
+      console.log("Attempting to sign up with:", { email, password, fullName })
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -35,33 +36,41 @@ export default function RegistrationForm() {
       })
 
       if (error) {
-        toast.toast({
+        console.error("Supabase sign up error:", error)
+        showToast({
+          type: "error",
           title: "Error en el registro",
           description: error.message,
-          variant: "destructive",
         })
       } else {
+        console.log("Sign up successful:", data)
         if (data.user) {
-          await supabase.from("profiles").upsert({
+          const { error: profileError } = await supabase.from("profiles").upsert({
             id: data.user.id,
             full_name: fullName,
             created_at: new Date().toISOString(),
           })
+
+          if (profileError) {
+            console.error("Error creating profile:", profileError)
+          }
         }
-        toast.toast({
+        showToast({
+          type: "success",
           title: "Registro exitoso",
           description: "Se ha enviado un correo de confirmación a tu dirección de email.",
         })
         router.push("/login")
       }
     } catch (error) {
-      toast.toast({
+      console.error("Unexpected error during sign up:", error)
+      showToast({
+        type: "error",
         title: "Error en el registro",
         description:
           error instanceof Error
             ? error.message
             : "Hubo un problema al registrar tu cuenta. Por favor, intenta de nuevo.",
-        variant: "destructive",
       })
     } finally {
       setLoading(false)

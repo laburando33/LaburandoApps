@@ -6,6 +6,7 @@ import ServiceRequestForm from "@/components/ServiceRequestForm"
 import { Button } from "@/components/ui/button"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import Image from "next/image"
+import SupabaseTest from "@/components/SupabaseTest"
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <Header />
 
       <main className="flex-grow container mx-auto px-4 py-8">
+        <SupabaseTest />
         {/* Hero Section */}
         <section className="text-center mb-12 rounded-lg shadow-lg relative overflow-hidden">
           <Image

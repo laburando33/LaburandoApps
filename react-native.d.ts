@@ -12,18 +12,28 @@ declare module "react-native" {
     select: <T extends Record<string, unknown>>(spec: T) => T[keyof T]
   }
 
+  export interface ViewStyle {
+    [key: string]: any
+  }
+
+  export interface TextStyle {
+    [key: string]: any
+  }
+
+  export type StyleProp<T> = T | T[] | null
+
   export interface ViewProps {
-    style?: Record<string, unknown>
+    style?: StyleProp<ViewStyle>
     [key: string]: unknown
   }
 
   export interface TextProps {
-    style?: Record<string, unknown>
+    style?: StyleProp<TextStyle>
     [key: string]: unknown
   }
 
   export interface TouchableOpacityProps {
-    style?: Record<string, unknown>
+    style?: StyleProp<ViewStyle>
     onPress?: () => void
     [key: string]: unknown
   }
