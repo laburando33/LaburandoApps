@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
+import Navigation from "./Navigation"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -16,9 +17,7 @@ export default function Header() {
   }
 
   const navigate = (path: string) => {
-    if (typeof window !== "undefined") {
-      router.push(path)
-    }
+    router.push(path)
     setIsMenuOpen(false)
   }
 
@@ -34,53 +33,55 @@ export default function Header() {
             <nav>
               <ul className="flex space-x-4">
                 <li>
-                  <button onClick={() => navigate("/")} className="text-gray-600 hover:text-primary">
+                  <Button variant="link" onClick={() => navigate("/")} className="text-gray-600 hover:text-primary">
                     Inicio
-                  </button>
+                  </Button>
                 </li>
                 <li>
-                  <button onClick={() => navigate("/services")} className="text-gray-600 hover:text-primary">
+                  <Button
+                    variant="link"
+                    onClick={() => navigate("/services")}
+                    className="text-gray-600 hover:text-primary"
+                  >
                     Servicios
-                  </button>
+                  </Button>
                 </li>
                 <li>
-                  <button onClick={() => navigate("/professionals")} className="text-gray-600 hover:text-primary">
+                  <Button
+                    variant="link"
+                    onClick={() => navigate("/professionals")}
+                    className="text-gray-600 hover:text-primary"
+                  >
                     Profesionales
-                  </button>
+                  </Button>
                 </li>
               </ul>
             </nav>
-            <div className="flex space-x-2">
-              <Button variant="outline" onClick={() => navigate("/login")}>
-                Iniciar sesión
-              </Button>
-              <Button onClick={() => navigate("/register")}>Registrarse</Button>
-            </div>
+            <Navigation />
           </div>
-          <button className="md:hidden" onClick={toggleMenu}>
+          <Button variant="ghost" className="md:hidden" onClick={toggleMenu}>
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </Button>
         </div>
         {isMenuOpen && (
           <div className="md:hidden mt-4">
             <nav className="flex flex-col space-y-2">
-              <button onClick={() => navigate("/")} className="text-gray-600 hover:text-primary">
+              <Button variant="link" onClick={() => navigate("/")} className="text-gray-600 hover:text-primary">
                 Inicio
-              </button>
-              <button onClick={() => navigate("/services")} className="text-gray-600 hover:text-primary">
+              </Button>
+              <Button variant="link" onClick={() => navigate("/services")} className="text-gray-600 hover:text-primary">
                 Servicios
-              </button>
-              <button onClick={() => navigate("/professionals")} className="text-gray-600 hover:text-primary">
+              </Button>
+              <Button
+                variant="link"
+                onClick={() => navigate("/professionals")}
+                className="text-gray-600 hover:text-primary"
+              >
                 Profesionales
-              </button>
+              </Button>
             </nav>
-            <div className="mt-4 flex flex-col space-y-2">
-              <Button variant="outline" className="w-full" onClick={() => navigate("/login")}>
-                Iniciar sesión
-              </Button>
-              <Button className="w-full" onClick={() => navigate("/register")}>
-                Registrarse
-              </Button>
+            <div className="mt-4">
+              <Navigation />
             </div>
           </div>
         )}
