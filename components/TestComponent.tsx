@@ -10,7 +10,7 @@ interface TestComponentProps {
   style?: ViewStyle
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ title, description, onPress, style }) => {
+const TestComponent: React.FC<TestComponentProps> = ({ title, description, onPress, style = {} }) => {
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>

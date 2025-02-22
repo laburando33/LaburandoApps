@@ -1,3 +1,4 @@
+
 export default {
   name: "LaburandoApp",
   slug: "laburando-app",
@@ -15,12 +16,14 @@ export default {
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
+    bundleIdentifier: "com.yourcompany.laburandoapp",
   },
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FFFFFF",
     },
+    package: "com.yourcompany.laburandoapp",
   },
   web: {
     favicon: "./assets/favicon.png",

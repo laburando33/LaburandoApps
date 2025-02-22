@@ -21,10 +21,10 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    },
-    "types": ["react-native", "jest"]
+    }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "react-native.d.ts"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"],
+  "extends": "expo/tsconfig.base"
 }
 

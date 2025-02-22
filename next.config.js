@@ -10,6 +10,10 @@ const nextConfig = {
     "expo-modules-core",
     "expo-notifications",
     "@expo/vector-icons",
+    "@chakra-ui/react",
+    "@emotion/react",
+    "@emotion/styled",
+    "framer-motion",
   ],
   experimental: {
     forceSwcTransforms: true,

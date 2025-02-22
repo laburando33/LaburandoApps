@@ -1,67 +1,61 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+import { Box, Input, Text, Button, VStack, useToast } from "@chakra-ui/react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/lib/useToast"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const supabase = createClientComponentClient()
-  const { showToast } = useToast()
+  const toast = useToast()
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setLoading(true)
-
+  const handleLogin = async () => {
+    setIsLoading(true)
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
-
-      showToast({
-        type: "success",
-        title: "Inicio de sesión exitoso",
-        description: "Has iniciado sesión correctamente.",
-      })
       router.push("/dashboard")
     } catch (error) {
-      showToast({
-        type: "error",
+      toast({
         title: "Error de inicio de sesión",
         description: error instanceof Error ? error.message : "Ha ocurrido un error al iniciar sesión.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
       })
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="email">Correo electrónico</Label>
-        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      </div>
-      <div>
-        <Label htmlFor="password">Contraseña</Label>
-        <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-      </div>
-      <Button type="submit" disabled={loading}>
-        {loading ? "Iniciando sesión..." : "Iniciar sesión"}
-      </Button>
-    </form>
+    <Box p={4} borderWidth={1} borderRadius="lg">
+      <VStack spacing={4}>
+        <Text fontSize="xl" fontWeight="bold">
+          Iniciar Sesión
+        </Text>
+        <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Correo electrónico" />
+        <Input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+          placeholder="Contraseña"
+        />
+        <Button
+          onClick={handleLogin}
+          isLoading={isLoading}
+          loadingText="Iniciando sesión..."
+          colorScheme="blue"
+          width="full"
+        >
+          Iniciar sesión
+        </Button>
+      </VStack>
+    </Box>
   )
 }
-
 

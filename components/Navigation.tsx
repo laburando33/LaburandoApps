@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 
 export default function Navigation() {
   const [user, setUser] = useState<any>(null)
@@ -43,18 +42,20 @@ export default function Navigation() {
       <div>
         {user ? (
           <>
-            <Link href="/dashboard">
-              <Button variant="link">Dashboard</Button>
+            <Link href="/dashboard" className="mr-4">
+              Dashboard
             </Link>
-            <Button onClick={handleSignOut}>Cerrar sesión</Button>
+            <button onClick={handleSignOut} className="bg-blue-500 text-white px-4 py-2 rounded">
+              Cerrar sesión
+            </button>
           </>
         ) : (
           <>
-            <Link href="/login">
-              <Button variant="link">Iniciar sesión</Button>
+            <Link href="/login" className="mr-4">
+              Iniciar sesión
             </Link>
-            <Link href="/register">
-              <Button>Registrarse</Button>
+            <Link href="/register" className="bg-blue-500 text-white px-4 py-2 rounded">
+              Registrarse
             </Link>
           </>
         )}
