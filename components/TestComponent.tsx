@@ -1,48 +1,34 @@
-import type React from "react"
-import { View, Text, StyleSheet } from "react-native"
-import type { ViewStyle } from "react-native"
-import { AdaptiveButton } from "@/components/ui/adaptive-button"
+import { View, Text, StyleSheet, Platform } from "react-native"
 
-interface TestComponentProps {
-  title: string
-  description: string
-  onPress: () => void
-  style?: ViewStyle
-}
-
-const TestComponent: React.FC<TestComponentProps> = ({ title, description, onPress, style = {} }) => {
+const TestComponent = () => {
   return (
-    <View style={[styles.container, style]}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
-      <AdaptiveButton onPress={onPress} style={styles.button as ViewStyle}>
-        Press me
-      </AdaptiveButton>
+    <View style={styles.container}>
+      <Text style={styles.text}>Test Component</Text>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 14,
-    marginBottom: 16,
-  },
-  button: {
-    backgroundColor: "#007AFF",
-    padding: 10,
+    backgroundColor: "#ddd",
+    padding: 20,
     borderRadius: 5,
     alignItems: "center",
-    justifyContent: "center",
+    ...Platform.select({
+      web: {
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+      },
+      default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
+      },
+    }),
+  },
+  text: {
+    fontSize: 16,
   },
 })
 

@@ -1,10 +1,14 @@
-import { View, Text } from "react-native"
+import type React from "react"
+import { SafeAreaProvider } from "react-native-safe-area-context"
+import Home from "./app/page"
 
-export default function App() {
+const App: React.FC = () => {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Welcome to Expo!</Text>
-    </View>
+    <SafeAreaProvider>
+      <Home />
+    </SafeAreaProvider>
   )
 }
+
+export default App
 

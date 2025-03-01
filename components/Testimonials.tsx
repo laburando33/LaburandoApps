@@ -1,50 +1,68 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Star } from "lucide-react"
+import type React from "react"
+import { StyleSheet, View, Text, Platform, type ViewStyle, type TextStyle } from "react-native"
 
-const testimonials = [
-  {
-    name: "María G.",
-    role: "Cliente",
-    content: "Encontré un excelente electricista en minutos. Servicio rápido y profesional.",
-  },
-  {
-    name: "Carlos R.",
-    role: "Plomero",
-    content: "LaburandoApp me ha ayudado a expandir mi negocio y conectar con nuevos clientes.",
-  },
-  {
-    name: "Laura M.",
-    role: "Cliente",
-    content: "La plataforma es fácil de usar y los profesionales son de confianza. ¡Muy recomendable!",
-  },
-]
+interface Testimonial {
+  id: number
+  name: string
+  testimonial: string
+}
 
-export function Testimonials() {
+interface TestimonialsProps {
+  testimonials: Testimonial[]
+}
+
+const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
   return (
-    <section id="testimonios" className="py-20 bg-gray-50">
-      <div className="container mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Lo que dicen nuestros usuarios</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>{testimonial.name}</span>
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                </CardTitle>
-                <p className="text-sm text-gray-500">{testimonial.role}</p>
-              </CardHeader>
-              <CardContent>
-                <p className="italic">&quot;{testimonial.content}&quot;</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
+    <View style={styles.container}>
+      {testimonials.map((testimonial) => (
+        <View key={testimonial.id} style={styles.testimonialItem}>
+          <Text style={styles.testimonialText}>{`"${testimonial.testimonial}"`}</Text>
+          <Text style={styles.testimonialName}>- {testimonial.name}</Text>
+        </View>
+      ))}
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  } as ViewStyle,
+  testimonialItem: {
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 24,
+    margin: 12,
+    width: Platform.OS === "web" ? "calc(33.33% - 24px)" : "100%",
+    ...Platform.select({
+      web: {
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" as unknown as number,
+      },
+      default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+      },
+    }),
+  } as ViewStyle,
+  testimonialText: {
+    fontSize: 16,
+    color: "#4b5563",
+    marginBottom: 16,
+    fontStyle: "italic",
+  } as TextStyle,
+  testimonialName: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#1e293b",
+    textAlign: "right",
+  } as TextStyle,
+})
+
+export default Testimonials
+

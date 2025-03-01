@@ -12,17 +12,22 @@ import {
 import { getPlatformSpecificComponent } from "@/config/platform"
 
 export type AdaptiveButtonProps = WebButtonProps &
-  Omit<TouchableOpacityProps, keyof WebButtonProps> & {
+  Omit<TouchableOpacityProps, keyof WebButtonProps | "onPress"> & {
     children: React.ReactNode
-    style?: StyleProp<ViewStyle>
+    style?: StyleProp<ViewStyle> | React.CSSProperties
     textStyle?: StyleProp<TextStyle>
     onPress?: () => void
   }
 
-const MobileButton = React.forwardRef<TouchableOpacity, AdaptiveButtonProps>(
-  ({ children, style, textStyle, onPress, ...props }, ref) => (
-    <TouchableOpacity ref={ref} style={[styles.button, style]} onPress={onPress} {...props}>
-      <Text style={[styles.text, textStyle]}>{children}</Text>
+  const MobileButton = React.forwardRef<React.ElementRef<typeof TouchableOpacity>, AdaptiveButtonProps>(  ({ children, style, textStyle, onPress, ...props }, ref) => (
+    <TouchableOpacity
+      ref={ref}
+      style={[styles.button, style as ViewStyle]}
+      onPress={onPress as TouchableOpacityProps["onPress"]}
+      {...props}
+    >
+      <Text style={[styles.text, textStyle as TextStyle]}>{typeof children === "string" ? children : null}</Text>
+      {typeof children !== "string" && children}
     </TouchableOpacity>
   ),
 )
@@ -45,3 +50,4 @@ const styles = StyleSheet.create({
 
 export const AdaptiveButton = getPlatformSpecificComponent<WebButtonProps, AdaptiveButtonProps>(WebButton, MobileButton)
 
+// Compare this snippet from components/IconsLoader.tsx:

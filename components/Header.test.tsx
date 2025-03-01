@@ -3,15 +3,29 @@
 import { render, screen, fireEvent } from "@testing-library/react"
 import Header from "./Header"
 import "@testing-library/jest-dom"
-import { useRouter } from "next/navigation"
 
 // Mock the next/navigation module
 jest.mock("next/navigation", () => ({
   useRouter() {
     return {
       push: jest.fn(),
+      back: jest.fn(),
+      forward: jest.fn(),
+      refresh: jest.fn(),
+      replace: jest.fn(),
+      prefetch: jest.fn(),
     }
   },
+}))
+
+// Mock the createClientComponentClient function
+jest.mock("@supabase/auth-helpers-nextjs", () => ({
+  createClientComponentClient: jest.fn(() => ({
+    auth: {
+      getUser: jest.fn(() => Promise.resolve({ data: { user: null } })),
+      onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })),
+    },
+  })),
 }))
 
 describe("Header", () => {
@@ -35,8 +49,9 @@ describe("Header", () => {
   })
 
   it("handles navigation clicks", () => {
+    const { useRouter } = jest.requireMock("next/navigation")
     const pushMock = jest.fn()
-    jest.spyOn({ useRouter }, "useRouter").mockImplementation(() => ({
+    useRouter.mockImplementation(() => ({
       push: pushMock,
       back: jest.fn(),
       forward: jest.fn(),
@@ -58,8 +73,9 @@ describe("Header", () => {
   })
 
   it("handles login and register clicks", () => {
+    const { useRouter } = jest.requireMock("next/navigation")
     const pushMock = jest.fn()
-    jest.spyOn({ useRouter }, "useRouter").mockImplementation(() => ({
+    useRouter.mockImplementation(() => ({
       push: pushMock,
       back: jest.fn(),
       forward: jest.fn(),

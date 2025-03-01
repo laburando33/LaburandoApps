@@ -1,15 +1,17 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import { Providers } from "./providers"
-import Navigation from "@/components/Navigation"
-import "./globals.css"
+'use client';
 
-const inter = Inter({ subsets: ["latin"] })
+import React from "react"
+import type { Metadata } from "next"
+import dynamic from 'next/dynamic'
+
+const DynamicClientLayout = dynamic(() => import('./ClientLayout'), { ssr: false })
 
 export const metadata: Metadata = {
   title: "LaburandoApp",
   description: "Conectando profesionales con clientes",
+  icons: {
+    icon: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({
@@ -19,13 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>
-        <Providers>
-          <Navigation />
-          {children}
-        </Providers>
+      <body>
+        <DynamicClientLayout>{children}</DynamicClientLayout>
       </body>
     </html>
   )
 }
-

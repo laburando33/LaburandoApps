@@ -1,5 +1,4 @@
-
-export default {
+module.exports = {
   name: "LaburandoApp",
   slug: "laburando-app",
   version: "1.0.0",
@@ -16,17 +15,19 @@ export default {
   assetBundlePatterns: ["**/*"],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: "com.yourcompany.laburandoapp",
   },
   android: {
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#FFFFFF",
     },
-    package: "com.yourcompany.laburandoapp",
   },
   web: {
     favicon: "./assets/favicon.png",
+  },
+  extra: {
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
 }
 

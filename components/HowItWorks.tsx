@@ -1,3 +1,4 @@
+import type React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClipboardList, Users, UserCheck, Star } from "lucide-react"
 
@@ -12,7 +13,7 @@ const steps = [
   { title: "Califica el servicio", description: "Comparte tu experiencia y ayuda a otros usuarios.", icon: Star },
 ]
 
-export function HowItWorks() {
+const HowItWorks: React.FC = () => {
   return (
     <section id="como-funciona" className="py-20 bg-white">
       <div className="container mx-auto">
@@ -36,4 +37,6 @@ export function HowItWorks() {
     </section>
   )
 }
+
+export default HowItWorks
 

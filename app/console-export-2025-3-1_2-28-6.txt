@@ -1,0 +1,102 @@
+GET
+http://localhost:3000/
+[HTTP/1.1 500 Internal Server Error 118270ms]
+
+	
+GET
+	http://localhost:3000/
+Status
+500
+Internal Server Error
+VersionHTTP/1.1
+Transferred1.40 kB (3.60 kB size)
+Request PriorityHighest
+DNS ResolutionSystem
+
+GET
+http://localhost:3000/_next/static/chunks/fallback/webpack.js?ts=1740806584973
+[HTTP/1.1 200 OK 159ms]
+
+GET
+http://localhost:3000/_next/static/chunks/fallback/main.js?ts=1740806584973
+[HTTP/1.1 200 OK 1827ms]
+
+GET
+http://localhost:3000/_next/static/chunks/fallback/pages/_app.js?ts=1740806584973
+[HTTP/1.1 200 OK 168ms]
+
+GET
+http://localhost:3000/_next/static/chunks/fallback/pages/_error.js?ts=1740806584973
+[HTTP/1.1 200 OK 177ms]
+
+GET
+http://localhost:3000/_next/static/chunks/fallback/react-refresh.js?ts=1740806584973
+[HTTP/1.1 200 OK 176ms]
+
+GET
+http://localhost:3000/favicon.ico
+[HTTP/1.1 200 OK 9ms]
+
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools react-dom.development.js:29835:17
+GET
+ws://localhost:3000/_next/webpack-hmr
+[HTTP/1.1 101 Switching Protocols 21ms]
+
+XHRGET
+http://localhost:3000/_next/static/development/_devMiddlewareManifest.json
+[HTTP/1.1 200 OK 110ms]
+
+Uncaught ModuleParseError: Module parse failed: Unexpected token (39:27)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+|                 }
+|                 if (!this.state.fontIsLoaded) {
+>                     return <Text />;
+|                 }
+|                 return (<RNVIconComponent ref={(view) => {
+main.js:2:4926
+[HMR] connected websocket.js:1:938
+./node_modules/@expo/vector-icons/build/createIconSet.js
+Module parse failed: Unexpected token (39:27)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+|                 }
+|                 if (!this.state.fontIsLoaded) {
+>                     return <Text />;
+|                 }
+|                 return (<RNVIconComponent ref={(view) => { client.js:2:912
+./node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/lib/create-icon-set.js
+Module parse failed: Unexpected token (79:8)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+| 
+|       return (
+>         <Text selectable={false} {...props}>
+|           {glyph}
+|           {children} client.js:2:912
+./node_modules/@react-native/assets-registry/registry.js
+Module parse failed: Unexpected token (13:7)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+| 'use strict';
+| 
+> export type PackagerAsset = {
+|   +__packager_asset: boolean,
+|   +fileSystemLocation: string, client.js:2:912
+./node_modules/@expo/vector-icons/build/createIconSet.js
+Module parse failed: Unexpected token (39:27)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+|                 }
+|                 if (!this.state.fontIsLoaded) {
+>                     return <Text />;
+|                 }
+|                 return (<RNVIconComponent ref={(view) => { client.js:2:912
+./node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/lib/create-icon-set.js
+Module parse failed: Unexpected token (79:8)
+You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+| 
+|       return (
+>         <Text selectable={false} {...props}>
+|           {glyph}
+|           {children} client.js:2:912
+Error in parsing value for ‘-webkit-text-size-adjust’.  Declaration dropped. localhost:3000:25:37
+Request for font "Roboto" blocked at visibility level 2 (requires 3)
+main.js:88:2819
+Request for font "Noto Sans" blocked at visibility level 2 (requires 3)
+main.js:88:2819

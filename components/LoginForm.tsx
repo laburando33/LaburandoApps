@@ -1,61 +1,83 @@
 "use client"
 
-import { useState } from "react"
-import { Box, Input, Text, Button, VStack, useToast } from "@chakra-ui/react"
+import React, { useState } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useToast } from "@/lib/useToast"
+import { Platform, View, Text } from "react-native"
 
 export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClientComponentClient()
-  const toast = useToast()
+  const { showToast } = useToast()
 
-  const handleLogin = async () => {
-    setIsLoading(true)
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.GestureResponderEvent) => {
+    if (Platform.OS !== "web") {
+      e.preventDefault()
+    }
+    setLoading(true)
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
       if (error) throw error
+
+      showToast({
+        type: "success",
+        title: "Inicio de sesión exitoso",
+        description: "Has iniciado sesión correctamente.",
+      })
       router.push("/dashboard")
     } catch (error) {
-      toast({
+      showToast({
+        type: "error",
         title: "Error de inicio de sesión",
         description: error instanceof Error ? error.message : "Ha ocurrido un error al iniciar sesión.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
       })
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
+  const FormWrapper = Platform.OS === "web" ? "form" : View
+  const LabelWrapper = Platform.OS === "web" ? Label : Text
+
   return (
-    <Box p={4} borderWidth={1} borderRadius="lg">
-      <VStack spacing={4}>
-        <Text fontSize="xl" fontWeight="bold">
-          Iniciar Sesión
-        </Text>
-        <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Correo electrónico" />
+    <FormWrapper onSubmit={handleSubmit} style={Platform.OS !== "web" ? { gap: 16 } : undefined}>
+      <View>
+        <LabelWrapper htmlFor="email">Correo electrónico</LabelWrapper>
         <Input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          placeholder="Contraseña"
+          id="email"
+          type="email"
+          value={email}
+          onChangeText={setEmail}
+          required
+          style={Platform.OS !== "web" ? { marginTop: 8 } : undefined}
         />
-        <Button
-          onClick={handleLogin}
-          isLoading={isLoading}
-          loadingText="Iniciando sesión..."
-          colorScheme="blue"
-          width="full"
-        >
-          Iniciar sesión
-        </Button>
-      </VStack>
-    </Box>
+      </View>
+      <View style={Platform.OS !== "web" ? { marginTop: 16 } : undefined}>
+        <LabelWrapper htmlFor="password">Contraseña</LabelWrapper>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChangeText={setPassword}
+          required
+          style={Platform.OS !== "web" ? { marginTop: 8 } : undefined}
+        />
+      </View>
+      <Button onPress={handleSubmit} disabled={loading} style={Platform.OS !== "web" ? { marginTop: 16 } : undefined}>
+        {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+      </Button>
+    </FormWrapper>
   )
 }
-

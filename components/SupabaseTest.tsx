@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase"
-
+import { useState, useEffect } from "react"
+import supabase from "@/lib/localDb"
 export default function SupabaseTest() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -11,9 +10,9 @@ export default function SupabaseTest() {
     async function testConnection() {
       try {
         console.log("Testing Supabase connection...")
-        const { data, error } = await supabase.from("profiles").select("count").single()
+        const { data, error } = await supabase.from("profiles").select("count", { count: "exact" })
         if (error) throw error
-        console.log("Supabase connection test result:", data)
+        console.log("Supabase connection test successful, count:", data)
         setStatus("success")
       } catch (error) {
         console.error("Supabase connection test error:", error)
@@ -28,7 +27,7 @@ export default function SupabaseTest() {
   return (
     <div className="p-4 border rounded">
       <h2 className="text-lg font-bold mb-2">Supabase Connection Test</h2>
-      {status === "loading" && <p>Testing connection...</p>}
+      {status === "loading" && <p>Testing connection to Supabase...</p>}
       {status === "success" && <p className="text-green-600">Successfully connected to Supabase!</p>}
       {status === "error" && (
         <div>

@@ -1,72 +1,94 @@
 "use client"
 
+import type React from "react"
 import { useState } from "react"
-import { View, TextInput, Button, StyleSheet } from "react-native"
-import { createClient } from "@supabase/supabase-js"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useToast } from "@/lib/useToast"
 
-const supabase = createClient("YOUR_SUPABASE_URL", "YOUR_SUPABASE_ANON_KEY", {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-})
-
-function UpdatePasswordForm({ navigation }) {
-  const [password, setPassword] = useState("")
+export default function UpdatePasswordForm() {
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const supabase = createClientComponentClient()
+  const { showToast } = useToast()
 
-  const handleUpdatePassword = async () => {
-    if (password !== confirmPassword) {
-      alert("Passwords do not match")
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+
+    if (newPassword !== confirmPassword) {
+      showToast({
+        type: "error",
+        title: "Error de actualización",
+        description: "Las contraseñas nuevas no coinciden.",
+      })
+      setLoading(false)
       return
     }
 
     try {
-      const { error } = await supabase.auth.update({ password: password })
+      const { error } = await supabase.auth.updateUser({ password: newPassword })
+
       if (error) throw error
-      alert("Password updated successfully!")
-      // Navigate to login screen or main app screen
+
+      showToast({
+        type: "success",
+        title: "Contraseña actualizada",
+        description: "Tu contraseña ha sido actualizada correctamente.",
+      })
+      router.push("/dashboard")
     } catch (error) {
-      alert(error.message)
+      showToast({
+        type: "error",
+        title: "Error de actualización",
+        description: error instanceof Error ? error.message : "Ha ocurrido un error al actualizar la contraseña.",
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="New Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm New Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <Button title="Update Password" onPress={handleUpdatePassword} />
-    </View>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="currentPassword">Contraseña actual</Label>
+        <Input
+          id="currentPassword"
+          type="password"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="newPassword">Nueva contraseña</Label>
+        <Input
+          id="newPassword"
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="confirmPassword">Confirmar nueva contraseña</Label>
+        <Input
+          id="confirmPassword"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+        />
+      </div>
+      <Button type="submit" disabled={loading}>
+        {loading ? "Actualizando..." : "Actualizar contraseña"}
+      </Button>
+    </form>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingLeft: 8,
-  },
-})
-
-export default UpdatePasswordForm
-

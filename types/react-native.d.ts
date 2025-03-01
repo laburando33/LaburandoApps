@@ -4,7 +4,11 @@ declare module "react-native" {
   export const View: ComponentType<ViewProps>
   export const Text: ComponentType<TextProps>
   export const TouchableOpacity: ComponentType<TouchableOpacityProps>
+  export const TextInput: ComponentType<TextInputProps>
+  export const ScrollView: ComponentType<ScrollViewProps>
   export const StyleSheet: {
+    absoluteFillObject: StyleProp<ViewStyle> | undefined
+    absoluteFill: any
     create: <T extends Record<string, unknown>>(styles: T) => T
   }
   export const Platform: {
@@ -38,6 +42,18 @@ declare module "react-native" {
     [key: string]: unknown
   }
 
-  // Add other components and APIs as needed
+  export interface TextInputProps {
+    style?: StyleProp<TextStyle>
+    value?: string
+    onChangeText?: (text: string) => void
+    secureTextEntry?: boolean
+    keyboardType?: "default" | "email-address" | "numeric" | "phone-pad"
+    [key: string]: unknown
+  }
+
+  export interface ScrollViewProps {
+    style?: StyleProp<ViewStyle>
+    [key: string]: unknown
+  }
 }
 

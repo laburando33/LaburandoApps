@@ -1,92 +1,68 @@
-"use client"
+import React from 'react';
+import { View, Platform, StyleSheet, ViewStyle } from 'react-native';
+import { useRouter } from 'next/router';
+import CustomButton from '@/components/CustomButton';
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
-import Navigation from "./Navigation"
-
-export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const router = useRouter()
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+const Header: React.FC = () => {
+  const router = useRouter();
 
   const navigate = (path: string) => {
-    router.push(path)
-    setIsMenuOpen(false)
+    if (Platform.OS === 'web') {
+      router.push(path);
+    } else {
+      // For mobile, you might want to use a different navigation method
+      // For example, if you're using React Navigation:
+      // navigation.navigate(path);
+      console.log('Navigate to:', path);
+    }
+  };
+
+  const HeaderContent = () => (
+    <View style={styles.nav}>
+      <CustomButton 
+        onPress={() => navigate("/")} 
+        variant="link"
+        className="text-gray-600 hover:text-primary"
+      >
+        Inicio
+      </CustomButton>
+      {/* Add more navigation items here */}
+    </View>
+  );
+
+  if (Platform.OS === 'web') {
+    return (
+      <header className="bg-white shadow-sm">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <HeaderContent />
+        </nav>
+      </header>
+    );
   }
 
+  // For mobile platforms
   return (
-    <header className="bg-white shadow-md">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="flex items-center">
-            <Image src="/logo.png" alt="LaburandoApps Logo" width={40} height={40} />
-            <span className="ml-2 text-2xl font-bold text-primary">LaburandoApps</span>
-          </Link>
-          <div className="hidden md:flex items-center space-x-4">
-            <nav>
-              <ul className="flex space-x-4">
-                <li>
-                  <Button variant="link" onClick={() => navigate("/")} className="text-gray-600 hover:text-primary">
-                    Inicio
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant="link"
-                    onClick={() => navigate("/services")}
-                    className="text-gray-600 hover:text-primary"
-                  >
-                    Servicios
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant="link"
-                    onClick={() => navigate("/professionals")}
-                    className="text-gray-600 hover:text-primary"
-                  >
-                    Profesionales
-                  </Button>
-                </li>
-              </ul>
-            </nav>
-            <Navigation />
-          </div>
-          <Button variant="ghost" className="md:hidden" onClick={toggleMenu}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </Button>
-        </div>
-        {isMenuOpen && (
-          <div className="md:hidden mt-4">
-            <nav className="flex flex-col space-y-2">
-              <Button variant="link" onClick={() => navigate("/")} className="text-gray-600 hover:text-primary">
-                Inicio
-              </Button>
-              <Button variant="link" onClick={() => navigate("/services")} className="text-gray-600 hover:text-primary">
-                Servicios
-              </Button>
-              <Button
-                variant="link"
-                onClick={() => navigate("/professionals")}
-                className="text-gray-600 hover:text-primary"
-              >
-                Profesionales
-              </Button>
-            </nav>
-            <div className="mt-4">
-              <Navigation />
-            </div>
-          </div>
-        )}
-      </div>
-    </header>
-  )
-}
+    <View style={styles.header}>
+      <HeaderContent />
+    </View>
+  );
+};
 
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  } as ViewStyle,
+  nav: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-around' as const,
+    alignItems: 'center' as const,
+    padding: 10,
+  } as ViewStyle,
+});
+
+export default Header;                                                        

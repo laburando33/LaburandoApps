@@ -1,56 +1,58 @@
-import pool from "../lib/localDb"
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
 
-async function migrate() {
-  const client = await pool.connect()
-  try {
-    await client.query("BEGIN")
+dotenv.config({ path: '.env.local' })
 
-    // Crear tabla de perfiles
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS profiles (
-        id SERIAL PRIMARY KEY,
-        user_id UUID UNIQUE NOT NULL,
-        full_name VARCHAR(255),
-        avatar_url TEXT,
-        website TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    // Crear tabla de servicios
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS services (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `)
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Anon Key:', supabaseAnonKey?.substring(0, 10) + '...')
 
-    // Crear tabla de solicitudes de servicio
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS service_requests (
-        id SERIAL PRIMARY KEY,
-        user_id UUID NOT NULL,
-        service_id INTEGER REFERENCES services(id),
-        description TEXT,
-        status VARCHAR(50) DEFAULT 'pending',
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-      )
-    `)
-
-    await client.query("COMMIT")
-    console.log("Migración completada con éxito")
-  } catch (e) {
-    await client.query("ROLLBACK")
-    console.error("Error durante la migración:", e)
-  } finally {
-    client.release()
-  }
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables')
 }
 
-migrate().catch(console.error)
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+async function verifyTables() {
+  const tables = [
+    'profiles',
+    'service_requests',
+    'professional_profiles',
+    'reviews',
+    'service_categories',
+    'professional_skills'
+  ];
+
+  for (const table of tables) {
+    try {
+      console.log(`Verificando tabla: ${table}`);
+      const { data, error } = await supabase
+        .from(table)
+        .select('count')
+        .limit(1);
+
+      if (error) {
+        console.error(`Error completo:`, error);
+        throw error;
+      }
+
+      console.log(`Tabla ${table} verificada correctamente.`);
+      console.log(`Datos:`, data);
+    } catch (e) {
+      console.error(`Error al verificar la tabla ${table}:`, e);
+      throw e;
+    }
+  }
+
+  console.log("Todas las tablas han sido verificadas correctamente.");
+}
+
+verifyTables().then(() => {
+  console.log("Verificación completada con éxito.");
+  process.exit(0);
+}).catch((error) => {
+  console.error("Verificación fallida:", error);
+  process.exit(1);
+});

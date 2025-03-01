@@ -1,14 +1,29 @@
-import { ChakraProvider } from "@chakra-ui/react"
-import type { AppProps } from "next/app"
-import theme from "../theme" 
+import React, { useEffect } from 'react';
+import { AppProps } from 'next/app';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { loadAsync } from 'expo-font';
+import * as Icons from '@expo/vector-icons';
+import dynamic from 'next/dynamic';
+
+const DynamicIconsLoader = dynamic(() => import('../components/IconsLoader'), { ssr: false });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    loadAsync({
+      ...Icons.Ionicons.font,
+      ...Icons.FontAwesome.font,
+      ...Icons.MaterialIcons.font,
+    }).catch((error) => {
+      console.warn('Error loading icon fonts:', error);
+    });
+  }, []);
+
   return (
-    <ChakraProvider theme={theme}>
+    <SafeAreaProvider>
+      <DynamicIconsLoader />
       <Component {...pageProps} />
-    </ChakraProvider>
-  )
+    </SafeAreaProvider>
+  );
 }
 
-export default MyApp
-
+export default MyApp;

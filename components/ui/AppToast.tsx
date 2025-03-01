@@ -1,37 +1,33 @@
-import { View, Text, StyleSheet } from "react-native"
-import type { ToastMessage } from "@/lib/useToast"
+import { useToast as useChakraToast } from "@chakra-ui/react"
+import { Platform } from "react-native"
 
-interface AppToastProps {
-  toast: ToastMessage | null
+type ToastType = "success" | "error" | "info" | "warning"
+
+interface ToastOptions {
+  type: ToastType
+  title: string
+  description: string
 }
 
-export function AppToast({ toast }: AppToastProps) {
-  if (!toast) return null
+export const useAppToast = () => {
+  const chakraToast = useChakraToast()
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{toast.title}</Text>
-      {toast.description && <Text style={styles.description}>{toast.description}</Text>}
-    </View>
-  )
+  const showToast = ({ type, title, description }: ToastOptions) => {
+    if (Platform.OS === "web") {
+      chakraToast({
+        title,
+        description,
+        status: type,
+        duration: 3000,
+        isClosable: true,
+      })
+    } else {
+      // Aquí puedes usar una librería de toasts para React Native
+      // Por ejemplo, react-native-toast-message
+      console.log(`${type.toUpperCase()}: ${title} - ${description}`)
+    }
+  }
+
+  return { showToast }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 40,
-    left: 20,
-    right: 20,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    padding: 10,
-    borderRadius: 5,
-  },
-  title: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  description: {
-    color: "white",
-  },
-})
 

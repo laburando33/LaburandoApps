@@ -1,36 +1,36 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import type { Database } from "@/lib/database.types"
-import type { DataItem } from "@/app/types"
-
-type TableName = keyof Database["public"]["Tables"]
+import { getSupabase } from "@/lib/supabase"
+import type { TableName, DataItem } from "@/types"
 
 export function useData(table: TableName) {
-  const [data, setData] = useState<DataItem[]>([])
+  const [data, setData] = useState<DataItem[] | null>(null)
   const [error, setError] = useState<Error | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const supabase = createClientComponentClient<Database>()
-
   useEffect(() => {
+    let isMounted = true
+
     async function fetchData() {
       try {
+        const supabase = getSupabase()
         const { data, error } = await supabase.from(table).select("*")
-
         if (error) throw error
-
-        setData(data)
+        if (isMounted) setData(data)
       } catch (e) {
-        setError(e instanceof Error ? e : new Error("An unknown error occurred"))
+        if (isMounted) setError(e instanceof Error ? e : new Error("An unknown error occurred"))
       } finally {
-        setLoading(false)
+        if (isMounted) setLoading(false)
       }
     }
 
     fetchData()
-  }, [table, supabase])
+
+    return () => {
+      isMounted = false
+    }
+  }, [table])
 
   return { data, error, loading }
 }

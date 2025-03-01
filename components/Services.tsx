@@ -1,37 +1,65 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Wrench, Zap, Paintbrush, Hammer, Truck, Scissors } from "lucide-react"
+import type React from "react"
+import { StyleSheet, View, Text, Platform, type ViewStyle, type TextStyle } from "react-native"
 
-const services = [
-  { title: "Plomería", description: "Reparaciones e instalaciones", icon: Wrench },
-  { title: "Electricidad", description: "Soluciones eléctricas seguras", icon: Zap },
-  { title: "Pintura", description: "Renovación de espacios", icon: Paintbrush },
-  { title: "Carpintería", description: "Trabajos en madera de calidad", icon: Hammer },
-  { title: "Mudanzas", description: "Transporte de tus pertenencias", icon: Truck },
-  { title: "Jardinería", description: "Mantenimiento de áreas verdes", icon: Scissors },
+const serviceList = [
+  { id: 1, name: "Plomería", icon: "🔧" },
+  { id: 2, name: "Electricidad", icon: "⚡" },
+  { id: 3, name: "Carpintería", icon: "🪚" },
+  { id: 4, name: "Pintura", icon: "🎨" },
+  { id: 5, name: "Jardinería", icon: "🌱" },
+  { id: 6, name: "Limpieza", icon: "🧹" },
 ]
 
-export function Services() {
+const Services: React.FC = () => {
   return (
-    <section id="servicios" className="py-20 bg-gray-50">
-      <div className="container mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Nuestros Servicios</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <service.icon className="w-6 h-6 mr-2 text-primary" />
-                  {service.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{service.description}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
+    <View style={styles.container}>
+      {serviceList.map((service) => (
+        <View key={service.id} style={styles.serviceItem}>
+          <Text style={styles.serviceIcon}>{service.icon}</Text>
+          <Text style={styles.serviceName}>{service.name}</Text>
+        </View>
+      ))}
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  } as ViewStyle,
+  serviceItem: {
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 16,
+    margin: 8,
+    width: Platform.OS === "web" ? 120 : "30%",
+    ...Platform.select({
+      web: {
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" as unknown as number,
+      },
+      default: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
+      },
+    }),
+  } as ViewStyle,
+  serviceIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  } as TextStyle,
+  serviceName: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#1e293b",
+    textAlign: "center",
+  } as TextStyle,
+})
+
+export default Services
 

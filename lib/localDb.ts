@@ -1,8 +1,13 @@
-type LocalDbType = {
-  [key: string]: string | number | boolean | null | undefined;
-};
+import { createClient } from "@supabase/supabase-js"
 
-const localDb: LocalDbType = {};
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 
-export default localDb
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+export function isSupabaseConfigured(): boolean {
+  return !!supabaseUrl && !!supabaseAnonKey
+}
+
+
+export default supabase

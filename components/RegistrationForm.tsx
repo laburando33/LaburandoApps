@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/lib/useToast"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function RegistrationForm() {
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [role, setRole] = useState("client")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const supabase = createClientComponentClient()
@@ -24,36 +26,31 @@ export default function RegistrationForm() {
     setLoading(true)
 
     try {
-      console.log("Attempting to sign up with:", { email, password, fullName })
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
+            role: role,
           },
         },
       })
 
       if (error) {
-        console.error("Supabase sign up error:", error)
         showToast({
           type: "error",
           title: "Error en el registro",
           description: error.message,
         })
       } else {
-        console.log("Sign up successful:", data)
         if (data.user) {
-          const { error: profileError } = await supabase.from("profiles").upsert({
+          await supabase.from("profiles").upsert({
             id: data.user.id,
             full_name: fullName,
+            role: role,
             created_at: new Date().toISOString(),
           })
-
-          if (profileError) {
-            console.error("Error creating profile:", profileError)
-          }
         }
         showToast({
           type: "success",
@@ -63,7 +60,6 @@ export default function RegistrationForm() {
         router.push("/login")
       }
     } catch (error) {
-      console.error("Unexpected error during sign up:", error)
       showToast({
         type: "error",
         title: "Error en el registro",
@@ -90,6 +86,18 @@ export default function RegistrationForm() {
       <div>
         <Label htmlFor="password">Contraseña</Label>
         <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      </div>
+      <div>
+        <Label htmlFor="role">Rol</Label>
+        <Select value={role} onValueChange={setRole}>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecciona un rol" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="client">Cliente</SelectItem>
+            <SelectItem value="partner">Profesional</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <Button type="submit" disabled={loading}>
         {loading ? "Registrando..." : "Registrarse"}

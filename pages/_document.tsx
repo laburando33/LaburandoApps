@@ -1,26 +1,20 @@
-import React from "react"
-import Document, { Html, Head, Main, NextScript } from "next/document"
-import { AppRegistry } from "react-native"
+// pages/_document.js
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 
-export default class MyDocument extends Document {
-  static async getInitialProps({ renderPage }: any) {
-    AppRegistry.registerComponent("Main", () => Main)
-    const { getStyleElement } = AppRegistry.getApplication("Main")
-    const page = await renderPage()
-    const styles = [getStyleElement()]
-    return { ...page, styles: React.Children.toArray(styles) }
-  }
-
+class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
         <body>
           <Main />
           <NextScript />
         </body>
       </Html>
-    )
+    );
   }
 }
 
+export default MyDocument;

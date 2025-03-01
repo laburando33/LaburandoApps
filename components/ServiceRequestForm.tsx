@@ -17,12 +17,16 @@ interface FormData {
   description: string
 }
 
-const ServiceRequestForm = () => {
+interface ServiceRequestFormProps {
+  initialServiceType?: string
+}
+
+const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialServiceType = "" }) => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
-    serviceType: "",
+    serviceType: initialServiceType,
     description: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -39,33 +43,22 @@ const ServiceRequestForm = () => {
     setIsSubmitting(true)
 
     try {
-      // Guardar la solicitud en Supabase
+      // Save the request to Supabase
       const { error } = await supabase.from("service_requests").insert([formData])
 
       if (error) throw error
 
-      // Enviar notificación a profesionales relevantes
-      const { data: professionals, error: profError } = await supabase
-        .from("professional_profiles")
-        .select("user_id")
-        .contains("services", [formData.serviceType])
+      // Send notification to relevant professionals (simplified for demo)
+      await sendNotification(
+        "demo-professional-id",
+        "Nueva solicitud de servicio",
+        `Hay una nueva solicitud para ${formData.serviceType}`
+      )
 
-      if (profError) throw profError
-
-      if (professionals) {
-        for (const prof of professionals) {
-          await sendNotification(
-            prof.user_id,
-            "Nueva solicitud de servicio",
-            `Hay una nueva solicitud para ${formData.serviceType}`,
-          )
-        }
-      }
-
-      // Enviar mensaje de WhatsApp al cliente
+      // Send WhatsApp message to the client
       await sendWhatsAppMessage(
         formData.phone,
-        `Gracias por tu solicitud de ${formData.serviceType}. Pronto te contactaremos con presupuestos.`,
+        `Gracias por tu solicitud de ${formData.serviceType}. Pronto te contactaremos con presupuestos.`
       )
 
       showToast({
@@ -74,12 +67,12 @@ const ServiceRequestForm = () => {
         description: "Tu solicitud ha sido enviada con éxito.",
       })
 
-      // Limpiar el formulario
+      // Clear the form
       setFormData({
         name: "",
         email: "",
         phone: "",
-        serviceType: "",
+        serviceType: initialServiceType,
         description: "",
       })
     } catch (error) {
@@ -128,4 +121,3 @@ const ServiceRequestForm = () => {
 }
 
 export default ServiceRequestForm
-

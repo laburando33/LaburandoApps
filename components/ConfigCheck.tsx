@@ -2,7 +2,7 @@
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertTriangle } from "lucide-react"
-import { isSupabaseConfigured } from "@/lib/supabase"
+import { isSupabaseConfigured } from "@/lib/localDb"
 import type React from "react"
 
 export function ConfigCheck({ children }: { children: React.ReactNode }) {

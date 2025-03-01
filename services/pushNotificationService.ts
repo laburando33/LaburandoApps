@@ -1,7 +1,16 @@
 import { Platform } from "react-native"
-import * as ExpoNotifications from "expo-notifications"
+import * as ExpoNotifications from 'expo-notifications';
 
 export type ExpoPushToken = string
+
+// Creamos un objeto Notifications que funcionará tanto en web como en móvil
+const Notifications = {
+  setNotificationChannelAsync: ExpoNotifications.setNotificationChannelAsync || (async () => {}),
+  AndroidImportance: ExpoNotifications.AndroidImportance || { MAX: 4 },
+  getPermissionsAsync: ExpoNotifications.getPermissionsAsync || (async () => ({ status: 'granted' })),
+  requestPermissionsAsync: ExpoNotifications.requestPermissionsAsync || (async () => ({ status: 'granted' })),
+  getExpoPushTokenAsync: ExpoNotifications.getExpoPushTokenAsync || (async () => ({ data: 'DUMMY_TOKEN' })),
+};
 
 export async function registerForPushNotificationsAsync(): Promise<ExpoPushToken | undefined> {
   if (typeof window === "undefined" || Platform.OS === "web") {
@@ -11,29 +20,33 @@ export async function registerForPushNotificationsAsync(): Promise<ExpoPushToken
 
   let token: ExpoPushToken | undefined
 
-  try {
-    if (Platform.OS === "android") {
-      await ExpoNotifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: ExpoNotifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      })
-    }
+  if (Platform.OS === 'android' || Platform.OS === 'ios') {
+    try {
+      if (Platform.OS === "android") {
+        await Notifications.setNotificationChannelAsync("default", {
+          name: "default",
+          importance: Notifications.AndroidImportance.MAX,
+          vibrationPattern: [0, 250, 250, 250],
+          lightColor: "#FF231F7C",
+        })
+      }
 
-    const { status: existingStatus } = await ExpoNotifications.getPermissionsAsync()
-    let finalStatus = existingStatus
-    if (existingStatus !== "granted") {
-      const { status } = await ExpoNotifications.requestPermissionsAsync()
-      finalStatus = status
+      const { status: existingStatus } = await Notifications.getPermissionsAsync()
+      let finalStatus = existingStatus
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync()
+        finalStatus = status
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!")
+        return
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data
+    } catch (error) {
+      console.error("Error registering for push notifications:", error)
     }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!")
-      return
-    }
-    token = (await ExpoNotifications.getExpoPushTokenAsync()).data
-  } catch (error) {
-    console.error("Error registering for push notifications:", error)
+  } else {
+    console.log("Push notifications are not supported on this platform")
   }
 
   return token
@@ -63,4 +76,3 @@ export async function sendPushNotification(expoPushToken: ExpoPushToken, title: 
     body: JSON.stringify(message),
   })
 }
-
